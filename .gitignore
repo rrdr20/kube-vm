@@ -1,0 +1,5 @@
+.vagrant
+*.log
+*.txt
+keys/*
+
