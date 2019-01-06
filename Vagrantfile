@@ -30,8 +30,8 @@ nodes = [
     {:base_name => "k8m", 
      :num_vms => "3", 
      :box => "ubuntu/bionic64", 
-     :cpu => "1",
-     :ram => "1024",
+     :cpu => "2",
+     :ram => "2048",
      :networks => [{:name => "kube_net01", :base_ip => "192.168.20.40"}]},
     
     # Deploy Worker servers for the Kubernetes cluster.
