@@ -7,24 +7,24 @@ nodes = [
      :num_vms => "1", 
      :box => "ubuntu/bionic64", 
      :cpu => "1",
-     :ram => "512",
-     :networks => [{:name => "kube_net01", :base_ip => "192.168.20.10"}]},
+     :ram => "1024",
+     :networks => [{:name => "kube_net01", :base_ip => "192.100.100.10"}]},
     
     # Deploy Load Balancer servers for the Kubernetes cluster.
     {:base_name => "lbs", 
      :num_vms => "2", 
      :box => "ubuntu/bionic64", 
      :cpu => "1",
-     :ram => "512",
-     :networks => [{:name => "kube_net01", :base_ip => "192.168.20.20"}]},
+     :ram => "1024",
+     :networks => [{:name => "kube_net01", :base_ip => "192.168.100.20"}]},
     
     # Deploy ETCD servers for the Kubernetes cluster.
     {:base_name => "etc", 
      :num_vms => "3", 
      :box => "ubuntu/bionic64", 
      :cpu => "1",
-     :ram => "1024",
-     :networks => [{:name => "kube_net01", :base_ip => "192.168.20.30"}]},
+     :ram => "2048",
+     :networks => [{:name => "kube_net01", :base_ip => "192.168.100.30"}]},
     
     # Deploy Master servers for the Kubernetes cluster.
     {:base_name => "k8m", 
@@ -32,7 +32,7 @@ nodes = [
      :box => "ubuntu/bionic64", 
      :cpu => "2",
      :ram => "2048",
-     :networks => [{:name => "kube_net01", :base_ip => "192.168.20.40"}]},
+     :networks => [{:name => "kube_net01", :base_ip => "192.168.100.40"}]},
     
     # Deploy Worker servers for the Kubernetes cluster.
     {:base_name => "k8w", 
@@ -40,7 +40,7 @@ nodes = [
      :box => "ubuntu/bionic64", 
      :cpu => "2",
      :ram => "2048",
-     :networks => [{:name => "kube_net01", :base_ip => "192.168.20.50"}]}
+     :networks => [{:name => "kube_net01", :base_ip => "192.168.100.50"}]}
 ]
 
 Vagrant.configure("2") do |config|
@@ -98,7 +98,7 @@ Vagrant.configure("2") do |config|
                     chmod 644 /home/vagrant/.ssh/id_rsa.pub
 		    sudo rm -f /etc/resolv.conf
 		    sudo echo "search dw002.net" >> /etc/resolv.conf
-		    sudo echo "nameserver 192.168.20.11" >> /etc/resolv.conf
+		    sudo echo "nameserver 192.168.100.11" >> /etc/resolv.conf
 		    sudo chmod 777 /etc/resolv.conf
                 EOC
             end
