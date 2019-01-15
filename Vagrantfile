@@ -31,7 +31,7 @@ nodes = [
      :num_vms => "3", 
      :box => "ubuntu/bionic64", 
      :cpu => "2",
-     :ram => "2048",
+     :ram => "4096",
      :networks => [{:name => "kube_net01", :base_ip => "192.168.100.40"}]},
     
     # Deploy Worker servers for the Kubernetes cluster.
@@ -39,7 +39,7 @@ nodes = [
      :num_vms => "5", 
      :box => "ubuntu/bionic64", 
      :cpu => "2",
-     :ram => "2048",
+     :ram => "4096",
      :networks => [{:name => "kube_net01", :base_ip => "192.168.100.50"}]}
 ]
 
