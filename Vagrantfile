@@ -1,4 +1,4 @@
-DOMAIN_NAME = "dw002.net"
+DOMAIN_NAME = "dwkube.net"
 
 # Defines the specifications for the nodes being deployed.
 nodes = [
@@ -97,7 +97,7 @@ Vagrant.configure("2") do |config|
                     chmod 600 /home/vagrant/.ssh/id_rsa
                     chmod 644 /home/vagrant/.ssh/id_rsa.pub
 		    sudo rm -f /etc/resolv.conf
-		    sudo echo "search dw002.net" >> /etc/resolv.conf
+		    sudo echo "search dwkube.net" >> /etc/resolv.conf
 		    sudo echo "nameserver 192.168.100.11" >> /etc/resolv.conf
 		    sudo chmod 777 /etc/resolv.conf
                 EOC
