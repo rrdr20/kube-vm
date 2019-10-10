@@ -50,56 +50,65 @@ Vagrant.configure("2") do |config|
 
 	    config.vm.define node_name do |nodecfg|
 	        nodecfg.vm.box = node[:box]
-		nodecfg.vm.hostname = node_name + ".#{DOMAIN_NAME}"
+            nodecfg.vm.hostname = node_name + ".#{DOMAIN_NAME}"
 
-		# Only the server needs a synced folder
-		unless node_name.include?("srv01")
-		    nodecfg.vm.synced_folder ".", "/vagrant", disabled: true
-		end
+            # Only the server needs a synced folder
+            unless node_name.include?("srv01")
+                nodecfg.vm.synced_folder ".", "/vagrant",
+                                         ShareFolderEnableSymlinksCreate: false,
+                                         disabled: true
+            end
 
-                # Some of the servers will have more than one network interface defined
-                node[:networks].each do |nodeint|
-		    int_ip = nodeint[:base_ip][0..-2] + "#{srv_count}"
-                    nodecfg.vm.network "private_network", ip: int_ip
-                end
+            # Some of the servers will have more than one network interface defined
+            node[:networks].each do |nodeint|
+                int_ip = nodeint[:base_ip][0..-2] + "#{srv_count}"
+                nodecfg.vm.network "private_network",
+                                   ip: int_ip,
+                                   nic_type: "82540EM",
+                                   virtualbox__intnet: nodeint[:name]
+            end
 
-                nodecfg.vm.provider "virtualbox" do |vb|
-                    vb.cpus = node[:cpu]
-                    vb.memory = node[:ram]
+            nodecfg.vm.provider "virtualbox" do |vb|
+                vb.cpus = node[:cpu]
+                vb.memory = node[:ram]
 
-                    # Disable the audio controller, not needed
-                    vb.customize ["modifyvm", :id, "--audio", "none"]
-                end
+                # Disable the audio controller, not needed
+                vb.customize ["modifyvm", :id, "--audio", "none"]
+            end
 
-                nodecfg.ssh.insert_key = false
-                nodecfg.ssh.private_key_path = ["keys/id_rsa", "~/.vagrant.d/insecure_private_key"]
-		if node_name.include?("srv01")
-                    nodecfg.vm.provision :shell, inline: <<-EOC
-		        sudo apt-get update
-		        sudo apt-get install dnsmasq
-		        sudo cp /vagrant/dnsmasq.conf /etc/dnsmasq.conf
-			sudo chown root:root /etc/dnsmasq.conf
-			sudo chmod 644 /etc/dnsmasq.conf
-			sudo systemctl enable dnsmasq.service
-			sudo systemctl restart dnsmasq.service
-                    EOC
-		end
-                nodecfg.vm.provision :file,
-                    source: "keys/id_rsa",
-                    destination: "/home/vagrant/.ssh/id_rsa"
-                nodecfg.vm.provision :file,
-                    source: "keys/id_rsa.pub",
-                    destination: "/home/vagrant/.ssh/id_rsa.pub"
-                nodecfg.vm.provision :file,
-                    source: "keys/id_rsa.pub",
-                    destination: "/home/vagrant/.ssh/authorized_keys"
+            nodecfg.ssh.insert_key = false
+            nodecfg.ssh.private_key_path = ["keys/id_rsa", "~/.vagrant.d/insecure_private_key"]
+            if node_name.include?("srv01")
                 nodecfg.vm.provision :shell, inline: <<-EOC
-                    chmod 600 /home/vagrant/.ssh/id_rsa
-                    chmod 644 /home/vagrant/.ssh/id_rsa.pub
-		    sudo rm -f /etc/resolv.conf
-		    sudo echo "search dwkube.net" >> /etc/resolv.conf
-		    sudo echo "nameserver 192.168.100.11" >> /etc/resolv.conf
-		    sudo chmod 777 /etc/resolv.conf
+                sudo systemctl stop systemd-resolved.service
+                sudo systemctl disable systemd-resolved.service
+                sudo rm -f /etc/resolv.conf
+                sudo echo "nameserver 8.8.8.8" > /etc/resolv.conf
+                sudo apt-get update
+                sudo apt-get install dnsmasq
+                sudo cp /vagrant/dnsmasq.conf /etc/dnsmasq.conf
+                sudo chown root:root /etc/dnsmasq.conf
+                sudo chmod 644 /etc/dnsmasq.conf
+                sudo systemctl enable dnsmasq.service
+                sudo systemctl restart dnsmasq.service
+                EOC
+            end
+            nodecfg.vm.provision :file,
+                source: "keys/id_rsa",
+                destination: "/home/vagrant/.ssh/id_rsa"
+            nodecfg.vm.provision :file,
+                source: "keys/id_rsa.pub",
+                destination: "/home/vagrant/.ssh/id_rsa.pub"
+            nodecfg.vm.provision :file,
+                source: "keys/id_rsa.pub",
+                destination: "/home/vagrant/.ssh/authorized_keys"
+            nodecfg.vm.provision :shell, inline: <<-EOC
+                chmod 600 /home/vagrant/.ssh/id_rsa
+                chmod 644 /home/vagrant/.ssh/id_rsa.pub
+                sudo rm -f /etc/resolv.conf
+                sudo echo "search dwkube.net" >> /etc/resolv.conf
+                sudo echo "nameserver 192.168.100.11" >> /etc/resolv.conf
+                sudo chmod 777 /etc/resolv.conf
                 EOC
             end
         end
